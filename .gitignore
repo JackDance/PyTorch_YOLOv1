@@ -1,6 +1,12 @@
 __pycache__
 .vscode
+.idea/
 *pt
 *.pth
 *.txt
 *.pkl
+
+# output
+weights/
+log/
+voc_eval/

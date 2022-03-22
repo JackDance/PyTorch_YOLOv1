@@ -2,11 +2,11 @@ import torch
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
 
-
+# 向外暴露的接口
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']
 
-
+# 模型url
 model_urls = {
     'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',
     'resnet34': 'https://download.pytorch.org/models/resnet34-333f7ec4.pth',
@@ -15,7 +15,7 @@ model_urls = {
     'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
 }
 
-
+### 定义要用到的模块，conv3x3, conv1x1, BasicBlock, Bottleneck
 def conv3x3(in_planes, out_planes, stride=1):
     """3x3 convolution with padding"""
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
@@ -25,7 +25,7 @@ def conv1x1(in_planes, out_planes, stride=1):
     """1x1 convolution"""
     return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
 
-class BasicBlock(nn.Module):
+class BasicBlock(nn.Module): # 定义网络模块需要继承nn.Module类
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
@@ -56,7 +56,7 @@ class BasicBlock(nn.Module):
 
         return out
 
-class Bottleneck(nn.Module):
+class Bottleneck(nn.Module): # 定义网络模块需要继承nn.Module类
     expansion = 4
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
@@ -93,6 +93,7 @@ class Bottleneck(nn.Module):
 
         return out
 
+### 定义resnet的主体代码
 class ResNet(nn.Module):
 
     def __init__(self, block, layers, zero_init_residual=False):
@@ -163,7 +164,10 @@ def resnet18(pretrained=False, **kwargs):
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     if pretrained:
         # strict = False as we don't need fc layer params.
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']), strict=False)
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']), strict=False) # 加载对应权重
+        # 如果在线下载权重速度过慢，可以先按照上面的url下载到本地，然后运行下面的命令
+        # local_weights_path = "/home/jackdance/Desktop/weights_base/Resnet_original/resnet18-5c106cde.pth"
+        # model.load_state_dict(torch.load(local_weights_path), strict=False)
     return model
 
 def resnet34(pretrained=False, **kwargs):
@@ -212,10 +216,14 @@ def resnet152(pretrained=False, **kwargs):
 
 if __name__=='__main__':
     #model = torchvision.models.resnet50()
-    print("found ", torch.cuda.device_count(), " GPU(s)")
-    device = torch.device("cuda")
-    model = resnet101(detection=True).to(device)
+    print("found ", torch.cuda.device_count(), " GPU(s)") # 返回gpu的数量
+    device = torch.device("cuda") # 指定设备为gpu
+    model = resnet18(pretrained=True).to(device)
+    # print(model)
+
+    input = torch.randn(1, 3, 416, 416).to(device) # 将tensor转移到指定的device上（device可以为‘cuda’或者‘cpu’）
+    output = model(input)
+    # print(output)
+    # print(output.shape) # torch.Size([1, 512, 13, 13])
     print(model)
 
-    input = torch.randn(1, 3, 512, 512).to(device)
-    output = model(input)

@@ -24,9 +24,27 @@ class SPP(nn.Module):
         super(SPP, self).__init__()
 
     def forward(self, x):
-        x_1 = torch.nn.functional.max_pool2d(x, 5, stride=1, padding=2)
-        x_2 = torch.nn.functional.max_pool2d(x, 9, stride=1, padding=4)
-        x_3 = torch.nn.functional.max_pool2d(x, 13, stride=1, padding=6)
+        x_1 = F.max_pool2d(x, 5, stride=1, padding=2)
+        x_2 = F.max_pool2d(x, 9, stride=1, padding=4)
+        x_3 = F.max_pool2d(x, 13, stride=1, padding=6)
+        # 按照维度1进行张量拼接（因为x的shape是（B，C，H，W），按照维度1就是在通道C这个维度拼接）
         x = torch.cat([x, x_1, x_2, x_3], dim=1)
 
         return x
+
+
+class detectionHead(nn.Module):
+    """
+    detection head
+    """
+    def __init__(self):
+        super(detectionHead, self).__init__()
+        self.det_head = nn.Sequential(
+            Conv(512, 256, k=1),
+            Conv(256, 512, k=3, p=1),
+            Conv(512, 256, k=1),
+            Conv(256, 512, k=3, p=1)
+        )
+
+    def forward(self,x):
+        return self.det_head(x)

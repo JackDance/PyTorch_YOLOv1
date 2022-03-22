@@ -62,22 +62,24 @@ def parse_args():
 
 
 def train():
+    # 创建命令行参数
     args = parse_args()
     print("Setting Arguments.. : ", args)
     print("----------------------------------------------------------")
 
+    # 保存模型的路径
     path_to_save = os.path.join(args.save_folder, args.dataset, args.version)
-    os.makedirs(path_to_save, exist_ok=True)
+    os.makedirs(path_to_save, exist_ok=True) # 递归建立输入的路径
     
-    # 是否使用cuda
+    # 是否使用cuda来训练
     if args.cuda:
         print('use cuda')
-        cudnn.benchmark = True
+        cudnn.benchmark = True # 增加程序运行的效率
         device = torch.device("cuda")
     else:
         device = torch.device("cpu")
 
-    # 是否使用多尺度训练
+    # 是否使用多尺度训练技巧
     if args.multi_scale:
         print('use the multi-scale trick ...')
         train_size = 640
@@ -86,6 +88,7 @@ def train():
         train_size = 416
         val_size = 416
 
+    # 训练所使用的配置参数
     cfg = train_cfg
 
     # 构建dataset类和dataloader类
@@ -124,13 +127,13 @@ def train():
     
     else:
         print('unknow dataset !! Only support voc and coco !!')
-        exit(0)
+        exit(0) # 程序正常退出
     
     print('Training model on:', dataset.name)
     print('The dataset size:', len(dataset))
     print("----------------------------------------------------------")
 
-    # dataloader类
+    # 调用官方的dataloader类
     dataloader = torch.utils.data.DataLoader(
                     dataset, 
                     batch_size=args.batch_size, 

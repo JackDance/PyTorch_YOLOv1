@@ -27,9 +27,9 @@ VOC_CLASSES = (  # always index 0
 
 
 # VOC数据集的目录，以下是笔者的目录。读者请根据自己的电脑来进行修改
-VOC_ROOT = "/home/k545/object-detection/dataset/VOCdevkit/"
+VOC_ROOT = "/home/jackdance/Desktop/dataset_base/VOCdevkit/"
 
-
+# 对注释进行转换
 class VOCAnnotationTransform(object):
     """Transforms a VOC annotation into a Tensor of bbox coords and label index
     Initilized with a dictionary lookup of classnames to indexes
@@ -150,6 +150,7 @@ class VOCDetection(data.Dataset):
             img = img[:, :, (2, 1, 0)]
             # img = img.transpose(2, 0, 1)
             target = np.hstack((boxes, np.expand_dims(labels, axis=1)))
+            # 返回四个变量，分别是图像，标注数据，原始图像的高和宽。所谓的原始图像，即未经过预处理的数据集图像
         return torch.from_numpy(img).permute(2, 0, 1), target, height, width
         # return torch.from_numpy(img), target, height, width
 
@@ -206,7 +207,8 @@ if __name__ == "__main__":
     # dataset
     dataset = VOCDetection(VOC_ROOT, img_size, [('2007', 'trainval')],
                             BaseTransform([img_size, img_size], (0, 0, 0)),
-                            VOCAnnotationTransform(), mosaic=True)
+                            VOCAnnotationTransform())
+
     for i in range(1000):
         im, gt, h, w = dataset.pull_item(i)
         img = im.permute(1,2,0).numpy()[:, :, (2, 1, 0)].astype(np.uint8)
@@ -219,6 +221,6 @@ if __name__ == "__main__":
             ymin *= img_size
             xmax *= img_size
             ymax *= img_size
-            img = cv2.rectangle(img, (int(xmin), int(ymin)), (int(xmax), int(ymax)), (0,0,255), 2)
+            img = cv2.rectangle(img, (int(xmin), int(ymin)), (int(xmax), int(ymax)), (0,0,255), 2) # 在图像上绘制矩形框
         cv2.imshow('gt', img)
         cv2.waitKey(0)

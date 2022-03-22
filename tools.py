@@ -9,7 +9,7 @@ class MSEWithLogitsLoss(nn.Module):
         super(MSEWithLogitsLoss, self).__init__()
         self.reduction = reduction
 
-    def forward(self, logits, targets):
+    def forward(self, logits, targets): # logits:prediction results targets:gt
         inputs = torch.clamp(torch.sigmoid(logits), min=1e-4, max=1.0 - 1e-4)
 
         pos_id = (targets==1.0).float()
@@ -64,7 +64,7 @@ def gt_creator(input_size, stride, label_lists=[]):
     ws = w // stride
     hs = h // stride
     s = stride
-    gt_tensor = np.zeros([batch_size, hs, ws, 1+1+4+1])
+    gt_tensor = np.zeros([batch_size, hs, ws, 1+1+4+1]) #1+1+4+1，分别是置信度（1）,类别标签（1）,边界框（4）,边界框回归权重（1）
 
     # 制作训练标签
     for batch_index in range(batch_size):
@@ -83,7 +83,7 @@ def gt_creator(input_size, stride, label_lists=[]):
 
     gt_tensor = gt_tensor.reshape(batch_size, -1, 1+1+4+1)
 
-    return torch.from_numpy(gt_tensor).float()
+    return torch.from_numpy(gt_tensor).float() # numpy转torch.Tensor
 
 
 def loss(pred_conf, pred_cls, pred_txtytwth, label):

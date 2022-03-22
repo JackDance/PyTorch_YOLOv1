@@ -427,7 +427,7 @@ if __name__ == '__main__':
     import numpy as np
 
     # 为了方便展示，均值设为0， 方差设为1
-    size = 416
+    size = 416 # resize大小
     transform = SSDAugmentation(size=size, 
                                 mean=(0, 0, 0),
                                 std=(1, 1, 1)
