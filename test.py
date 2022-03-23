@@ -81,7 +81,11 @@ def test(net, device, testset, transform, thresh, class_colors=None, class_names
         # 可视化检测结果
         img_processed = vis(img, bboxes, scores, cls_inds, thresh, class_colors, class_names, class_indexs, dataset)
         cv2.imshow('detection', img_processed)
-        cv2.waitKey(0)
+        cv2.waitKey(0) # 无限期显示窗口，直到任何按键为止。
+
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #     break
+
         # print('Saving the' + str(index) + '-th image ...')
         # cv2.imwrite('test_images/' + args.dataset+ '3/' + str(index).zfill(6) +'.jpg', img)
 
