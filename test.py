@@ -32,14 +32,34 @@ args = parser.parse_args()
 
 
 def vis(img, bboxes, scores, cls_inds, thresh, class_colors, class_names, class_indexs=None, dataset='voc'):
+    """
+    以矩形框的形式可视化检测结果
+    Args:
+        img: opencv读取后的图像
+        bboxes: 模型预测的bboxes
+        scores: 模型预测的scores
+        cls_inds: 模型预测的cls_inds
+        thresh: 可视化阈值，scores>thresh的bboxes才会被显示
+        class_colors: 每一类矩形框的颜色
+        class_names: 类别名称
+        class_indexs: 类别的索引
+        dataset: 检测的数据集名称
+
+    Returns:带有矩形框的图片
+
+    """
     if dataset == 'voc':
         for i, box in enumerate(bboxes):
             cls_indx = cls_inds[i]
             xmin, ymin, xmax, ymax = box
+            # 当scores>thresh的bboxes才会被显示
             if scores[i] > thresh:
+                # 在检测的目标外围绘制矩形框
                 cv2.rectangle(img, (int(xmin), int(ymin)), (int(xmax), int(ymax)), class_colors[int(cls_indx)], 1)
+                # 在上面绘制的矩形框的上方放置小的矩形框，用以在内部填写类别名和置信度
                 cv2.rectangle(img, (int(xmin), int(abs(ymin)-20)), (int(xmax), int(ymin)), class_colors[int(cls_indx)], -1)
-                mess = '%s' % (class_names[int(cls_indx)])
+                # 获得类别名和置信度
+                mess = '%s' % (class_names[int(cls_indx)]) + ' ' + '%.4f'% scores[i]
                 cv2.putText(img, mess, (int(xmin), int(ymin-5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1)
 
     elif dataset == 'coco-val' and class_indexs is not None:
@@ -52,7 +72,7 @@ def vis(img, bboxes, scores, cls_inds, thresh, class_colors, class_names, class_
                 cls_id = class_indexs[int(cls_indx)]
                 cls_name = class_names[cls_id]
                 # mess = '%s: %.3f' % (cls_name, scores[i])
-                mess = '%s' % (cls_name)
+                mess = '%s' % (cls_name) + ' ' + '%.4f'% scores[i]
                 cv2.putText(img, mess, (int(xmin), int(ymin-5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1)
 
     return img
@@ -82,7 +102,7 @@ def test(net, device, testset, transform, thresh, class_colors=None, class_names
         img_processed = vis(img, bboxes, scores, cls_inds, thresh, class_colors, class_names, class_indexs, dataset)
         cv2.imshow('detection', img_processed)
         cv2.waitKey(0) # 无限期显示窗口，直到任何按键为止。
-
+        break
         # if cv2.waitKey(1) & 0xFF == ord('q'):
         #     break
 

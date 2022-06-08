@@ -114,7 +114,7 @@ class VOCDetection(data.Dataset):
         for (year, name) in image_sets:
             rootpath = osp.join(self.root, 'VOC' + year)
             for line in open(osp.join(rootpath, 'ImageSets', 'Main', name + '.txt')):
-                self.ids.append((rootpath, line.strip()))
+                self.ids.append((rootpath, line.strip())) # strip()用于移除字符串头尾指定的字符（默认为空格或换行符）或字符序列。
 
 
     def __getitem__(self, index):

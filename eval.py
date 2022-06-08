@@ -104,7 +104,7 @@ if __name__ == '__main__':
     net = net.to(device)
     
     # evaluation
-    with torch.no_grad():
+    with torch.no_grad(): # 停止gradient的计算和存储，以节约算力和显存
         if args.dataset == 'voc':
             voc_test(net, device, input_size)
         elif args.dataset == 'coco-val':

@@ -166,7 +166,7 @@ def train():
 
         writer = SummaryWriter(log_path)
     
-    # keep training
+    # 恢复训练
     if args.resume is not None:
         print('keep training model: %s' % (args.resume))
         model.load_state_dict(torch.load(args.resume, map_location=device))

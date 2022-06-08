@@ -27,6 +27,18 @@ def detection_collate(batch):
 
 
 def base_transform(image, size, mean, std):
+    """
+    普通的图像归一化操作，即将图像的所有像素都除以255，这样所有像素有映射到了0-1范围内，随后再使用均值和标准差做
+    进一步的归一化处理。
+    Args:
+        image: 已经通过opencv读取出的图像
+        size: 要resize的大小
+        mean: 均值，默认使用ImageNet的mean
+        std: 标准差，默认使用ImageNet的std
+
+    Returns:
+            返回归一化的图像x
+    """
     x = cv2.resize(image, (size, size)).astype(np.float32)
     x /= 255.
     x -= mean
